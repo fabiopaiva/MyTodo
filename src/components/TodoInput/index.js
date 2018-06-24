@@ -6,7 +6,8 @@ import Grid from '@material-ui/core/Grid'
 import FormControl from '@material-ui/core/FormControl'
 import TextField from '@material-ui/core/TextField'
 import Paper from '@material-ui/core/Paper'
-import { addTodo } from '../../actions/TodoActions'
+import { addTodo, updateTodo } from '../../actions/TodoActions'
+import type { Todo } from '../../types/todo'
 
 const styles = theme => ({
   root: {
@@ -26,6 +27,10 @@ const styles = theme => ({
 type Props = {
   classes: Object,
   addTodo: (text: string) => void,
+  updateTodo: (id: number, text: string) => void,
+  item?: Todo,
+  onUpdate?: () => void,
+  inputRef?: (ref: HTMLInputElement) => void,
 }
 
 type State = {
@@ -33,8 +38,19 @@ type State = {
 }
 
 class TodoInput extends React.Component<Props, State> {
-  state = {
-    inputValue: '',
+  static defaultProps = {
+    item: null,
+    onUpdate: () => {},
+    inputRef: () => {},
+  }
+
+  constructor(props: Props) {
+    super(props)
+    const { item } = props
+
+    this.state = {
+      inputValue: item ? item.text : '',
+    }
   }
 
   componentDidMount() {
@@ -54,15 +70,31 @@ class TodoInput extends React.Component<Props, State> {
   }
 
   handleInputRef = (ref: HTMLInputElement) => {
+    const { inputRef } = this.props
     this.inputRef = ref
+    if (inputRef) {
+      inputRef(ref)
+    }
   }
 
   handleKeyUp = (event: KeyboardEvent) => {
-    const { addTodo: fnAddTodo } = this.props
+    const {
+      addTodo: fnAddTodo,
+      updateTodo: fnUpdateTodo,
+      item,
+      onUpdate,
+    } = this.props
     const { inputValue } = this.state
     if (event.code === 'Enter') {
-      fnAddTodo(inputValue)
       this.setState({ inputValue: '' })
+      if (item) {
+        fnUpdateTodo(item.id, inputValue)
+        if (onUpdate) {
+          onUpdate()
+        }
+      } else {
+        fnAddTodo(inputValue)
+      }
     }
   }
 
@@ -93,4 +125,4 @@ class TodoInput extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(connect(undefined, { addTodo })(TodoInput))
+export default withStyles(styles)(connect(undefined, { addTodo, updateTodo })(TodoInput))
