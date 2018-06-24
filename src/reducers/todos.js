@@ -26,31 +26,31 @@ export default (state: State = initialState, action: Action): State => {
           {
             id: action.id || Date.now(), // @TODO: replace with the id properly
             text: action.text,
-            completed: false
+            completed: false,
           },
-          ...state.items
-        ]
+          ...state.items,
+        ],
       }
     case types.TODO_UPDATE:
       return {
         ...state,
-        items: state.items.map(todo => (todo.id === action.id) ?
-          { ...todo, text: action.text }
+        items: state.items.map(todo => ((todo.id === action.id)
+          ? { ...todo, text: action.text }
           : todo
-        )
+        )),
       }
     case types.TODO_REMOVE:
       return {
         ...state,
-        items: state.items.filter(todo => (todo.id !== action.id))
+        items: state.items.filter(todo => (todo.id !== action.id)),
       }
     case types.TODO_TOGGLE:
       return {
         ...state,
-        items: state.items.map(todo => (todo.id === action.id) ?
-          { ...todo, completed: !todo.completed }
+        items: state.items.map(todo => ((todo.id === action.id)
+          ? { ...todo, completed: !todo.completed }
           : todo
-        )
+        )),
       }
     case types.TODO_SET_ALL_STATUS:
       return {
