@@ -187,72 +187,72 @@ describe('todos reducer', () => {
       ],
     })
 
-    // expect(
-    //   reducer({
-    //     items: [
-    //       {
-    //         text: 'Use Redux',
-    //         completed: true,
-    //         id: 1,
-    //       },
-    //       {
-    //         text: 'Finish assignment',
-    //         completed: true,
-    //         id: 2,
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     type: types.TODO_SET_ALL_STATUS,
-    //     isCompleted: false,
-    //   }),
-    // ).toEqual({
-    //   items: [
-    //     {
-    //       text: 'Use Redux',
-    //       completed: false,
-    //       id: 1,
-    //     },
-    //     {
-    //       text: 'Finish assignment',
-    //       completed: false,
-    //       id: 2,
-    //     },
-    //   ],
-    // })
+    expect(
+      reducer({
+        items: [
+          {
+            text: 'Use Redux',
+            completed: true,
+            id: 1,
+          },
+          {
+            text: 'Finish assignment',
+            completed: true,
+            id: 2,
+          },
+        ],
+      },
+      {
+        type: types.TODO_SET_ALL_STATUS,
+        isCompleted: false,
+      }),
+    ).toEqual({
+      items: [
+        {
+          text: 'Use Redux',
+          completed: false,
+          id: 1,
+        },
+        {
+          text: 'Finish assignment',
+          completed: false,
+          id: 2,
+        },
+      ],
+    })
 
-    // expect(
-    //   reducer({
-    //     items: [
-    //       {
-    //         text: 'Use Redux',
-    //         completed: false,
-    //         id: 1,
-    //       },
-    //       {
-    //         text: 'Finish assignment',
-    //         completed: true,
-    //         id: 2,
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     type: types.TODO_SET_ALL_STATUS,
-    //     isCompleted: true,
-    //   }),
-    // ).toEqual({
-    //   items: [
-    //     {
-    //       text: 'Use Redux',
-    //       completed: true,
-    //       id: 1,
-    //     },
-    //     {
-    //       text: 'Finish assignment',
-    //       completed: true,
-    //       id: 2,
-    //     },
-    //   ],
-    // })
+    expect(
+      reducer({
+        items: [
+          {
+            text: 'Use Redux',
+            completed: false,
+            id: 1,
+          },
+          {
+            text: 'Finish assignment',
+            completed: true,
+            id: 2,
+          },
+        ],
+      },
+      {
+        type: types.TODO_SET_ALL_STATUS,
+        isCompleted: true,
+      }),
+    ).toEqual({
+      items: [
+        {
+          text: 'Use Redux',
+          completed: true,
+          id: 1,
+        },
+        {
+          text: 'Finish assignment',
+          completed: true,
+          id: 2,
+        },
+      ],
+    })
   })
 })

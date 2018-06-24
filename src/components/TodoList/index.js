@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 import Checkbox from '@material-ui/core/Checkbox'
 import TodoItem from '../TodoItem'
+import TodoFooter from '../TodoFooter'
 import { setAllTodosStatus } from '../../actions/TodoActions'
 import type { Todo } from '../../types/todo'
 
@@ -46,6 +47,7 @@ const TodoList = ({ classes, items, setAllTodosStatus: fnSetAllTodosStatus }: Pr
             <List component="nav">
               {items.map(item => <TodoItem key={item.id} item={item} />)}
             </List>
+            <TodoFooter />
           </Paper>
         </Grid>
       </Grid>
