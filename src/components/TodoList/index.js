@@ -9,6 +9,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import TodoItem from '../TodoItem'
 import TodoFooter from '../TodoFooter'
 import { setAllTodosStatus } from '../../actions/TodoActions'
+import types from '../../constants/ActionTypes'
 import type { Todo } from '../../types/todo'
 
 const styles = theme => ({
@@ -26,12 +27,17 @@ type Props = {
   classes: Object,
   items: Array<Todo>,
   setAllTodosStatus: (status: boolean) => void,
+  filter: string,
 }
 
-const TodoList = ({ classes, items, setAllTodosStatus: fnSetAllTodosStatus }: Props) => {
+const TodoList = ({ classes, items, setAllTodosStatus: fnSetAllTodosStatus, filter }: Props) => {
   if (!items.length) return null
 
   const isAllItemsChecked = items.filter(item => item.completed).length === items.length
+
+  const criteria = item => filter === types.SHOW_ALL
+    || (filter === types.SHOW_ACTIVE && !item.completed)
+    || (filter === types.SHOW_COMPLETED && item.completed)
 
   return (
     <Grid container className={classes.root}>
@@ -45,7 +51,7 @@ const TodoList = ({ classes, items, setAllTodosStatus: fnSetAllTodosStatus }: Pr
               />
             </Grid>
             <List component="nav">
-              {items.map(item => <TodoItem key={item.id} item={item} />)}
+              {items.filter(criteria).map(item => <TodoItem key={item.id} item={item} />)}
             </List>
             <TodoFooter />
           </Paper>
@@ -57,6 +63,7 @@ const TodoList = ({ classes, items, setAllTodosStatus: fnSetAllTodosStatus }: Pr
 
 const mapStateToProps = state => ({
   items: state.todos.items,
+  filter: state.visibilityFilter,
 })
 
 export default withStyles(styles)(connect(mapStateToProps, { setAllTodosStatus })(TodoList))
