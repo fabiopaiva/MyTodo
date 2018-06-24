@@ -21,3 +21,8 @@ export const toggleTodo = (id: number) => ({
   type: types.TODO_TOGGLE,
   id,
 })
+
+export const setAllTodosStatus = (isCompleted: boolean) => ({
+  type: types.TODO_SET_ALL_STATUS,
+  isCompleted,
+})

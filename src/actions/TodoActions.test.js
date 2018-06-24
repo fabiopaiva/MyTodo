@@ -40,4 +40,18 @@ describe('actions', () => {
     }
     expect(actions.toggleTodo(id)).toEqual(expectedAction)
   })
+
+  it('should create an action to toggle all todos', () => {
+    const expectedAction = {
+      type: types.TODO_SET_ALL_STATUS,
+      isCompleted: true,
+    }
+    expect(actions.setAllTodosStatus(true)).toEqual(expectedAction)
+
+    const expectedAnotherAction = {
+      type: types.TODO_SET_ALL_STATUS,
+      isCompleted: false,
+    }
+    expect(actions.setAllTodosStatus(false)).toEqual(expectedAnotherAction)
+  })
 })
