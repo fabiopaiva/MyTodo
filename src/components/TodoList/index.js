@@ -21,33 +21,25 @@ const styles = theme => ({
 
 type Props = {
   classes: Object,
-  // addTodo: (text: string) => void,
-}
-
-type State = {
-  inputValue: string,
   items: Array<Todo>,
 }
 
-class TodoList extends React.Component<Props, State> {
-  render() {
-    const { classes, items } = this.props
-    if (!items.length) return null
+const TodoList = ({ classes, items }: Props) => {
+  if (!items.length) return null
 
-    return (
-      <Grid container className={classes.root}>
-        <Grid item xs={12}>
-          <Grid container justify="center">
-            <Paper className={classes.wrapper} elevation={0}>
-              <List component="nav">
-                {items.map(item => <TodoItem key={item.id} item={item} />)}
-              </List>
-            </Paper>
-          </Grid>
+  return (
+    <Grid container className={classes.root}>
+      <Grid item xs={12}>
+        <Grid container justify="center">
+          <Paper className={classes.wrapper} elevation={0}>
+            <List component="nav">
+              {items.map(item => <TodoItem key={item.id} item={item} />)}
+            </List>
+          </Paper>
         </Grid>
       </Grid>
-    )
-  }
+    </Grid>
+  )
 }
 
 const mapStateToProps = state => ({

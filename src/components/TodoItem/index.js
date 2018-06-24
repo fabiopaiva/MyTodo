@@ -7,15 +7,24 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import Checkbox from '@material-ui/core/Checkbox'
 import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
+import Typography from '@material-ui/core/Typography'
+import { withStyles } from '@material-ui/core/styles'
 import TodoInput from '../TodoInput'
 import { toggleTodo, removeTodo } from '../../actions/TodoActions'
 
 import type { Todo } from '../../types/todo'
 
+const styles = {
+  completed: {
+    textDecoration: 'line-through',
+  },
+}
+
 type Props = {
   item: Todo,
   toggleTodo: (id: number) => void,
   removeTodo: (id: number) => void,
+  classes: Object,
 }
 
 type State = {
@@ -70,7 +79,7 @@ class TodoItem extends React.Component<Props, State> {
   inputRefEditing: ?HTMLInputElement
 
   render() {
-    const { item } = this.props
+    const { item, classes } = this.props
     const { isEditing } = this.state
 
     return isEditing ? (
@@ -82,7 +91,14 @@ class TodoItem extends React.Component<Props, State> {
     )
       : (
         <ListItem dense button onClick={this.handleItemClick}>
-          <ListItemText primary={item.text} />
+          <ListItemText
+            primary={(
+              <Typography color={item.completed ? 'secondary' : 'primary'} variant="subheading">
+                {item.text}
+              </Typography>
+            )}
+            className={item.completed ? classes.completed : ''}
+          />
           <ListItemSecondaryAction>
             <Checkbox checked={item.completed} onChange={this.handleToggle} />
             <IconButton aria-label="Delete" onClick={this.handleRemove}>
@@ -96,4 +112,4 @@ class TodoItem extends React.Component<Props, State> {
   }
 }
 
-export default connect(undefined, { toggleTodo, removeTodo })(TodoItem)
+export default withStyles(styles)(connect(undefined, { toggleTodo, removeTodo })(TodoItem))
