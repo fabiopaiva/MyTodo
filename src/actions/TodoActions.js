@@ -1,0 +1,23 @@
+// @flow
+import types from '../constants/ActionTypes'
+
+export const addTodo = (text: string) => ({
+  type: types.TODO_ADD,
+  text,
+})
+
+export const removeTodo = (id: number) => ({
+  type: types.TODO_REMOVE,
+  id,
+})
+
+export const updateTodo = (id: number, text: string) => ({
+  type: types.TODO_UPDATE,
+  id,
+  text,
+})
+
+export const toggleTodo = (id: number) => ({
+  type: types.TODO_TOGGLE,
+  id,
+})
