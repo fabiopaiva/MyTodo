@@ -15,14 +15,12 @@ type Props = {
   classes: Object,
 }
 
-const Header = ({ classes }: Props) => (
-  <AppBar>
+export default withStyles(styles)(({ classes }: Props) => (
+  <AppBar position="static">
     <Toolbar>
       <Typography variant="title" color="inherit" className={classes.flex}>
-        Todos
+        todos
       </Typography>
     </Toolbar>
-  </AppBar> 
-)
-
-export default withStyles(styles)(Header)
+  </AppBar>
+))
