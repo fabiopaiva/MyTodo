@@ -1,10 +1,12 @@
 // @flow
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import FormControl from '@material-ui/core/FormControl'
 import TextField from '@material-ui/core/TextField'
 import Paper from '@material-ui/core/Paper'
+import { addTodo } from '../../actions/TodoActions'
 
 const styles = theme => ({
   root: {
@@ -23,6 +25,7 @@ const styles = theme => ({
 
 type Props = {
   classes: Object,
+  addTodo: (text: string) => void,
 }
 
 type State = {
@@ -34,9 +37,36 @@ class TodoInput extends React.Component<Props, State> {
     inputValue: '',
   }
 
-  handleChange = (event) => {
+  componentDidMount() {
+    if (this.inputRef) {
+      this.inputRef.addEventListener('keyup', this.handleKeyUp)
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.inputRef) {
+      this.inputRef.removeEventListener('keyup', this.handleKeyUp)
+    }
+  }
+
+  handleChange = (event: SyntheticInputEvent<*>) => {
     this.setState({ inputValue: event.target.value })
   }
+
+  handleInputRef = (ref: HTMLInputElement) => {
+    this.inputRef = ref
+  }
+
+  handleKeyUp = (event: KeyboardEvent) => {
+    const { addTodo: fnAddTodo } = this.props
+    const { inputValue } = this.state
+    if (event.code === 'Enter') {
+      fnAddTodo(inputValue)
+      this.setState({ inputValue: '' })
+    }
+  }
+
+  inputRef: ?HTMLInputElement
 
   render() {
     const { classes } = this.props
@@ -48,7 +78,12 @@ class TodoInput extends React.Component<Props, State> {
           <Grid container justify="center">
             <Paper className={classes.inputWrapper}>
               <FormControl fullWidth className={classes.input}>
-                <TextField label="What needs to be done?" value={inputValue} onChange={this.handleChange} />
+                <TextField
+                  label="What needs to be done?"
+                  value={inputValue}
+                  onChange={this.handleChange}
+                  inputRef={this.handleInputRef}
+                />
               </FormControl>
             </Paper>
           </Grid>
@@ -58,4 +93,4 @@ class TodoInput extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(TodoInput)
+export default withStyles(styles)(connect(undefined, { addTodo })(TodoInput))
