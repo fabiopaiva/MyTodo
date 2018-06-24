@@ -2,28 +2,41 @@
 
 import React from 'react'
 import { Provider } from 'react-redux'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import cyan from '@material-ui/core/colors/cyan'
+import yellow from '@material-ui/core/colors/green'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { withStyles } from '@material-ui/core/styles'
 import createStore from './store'
-import logo from './logo.svg'
-import './App.css'
+import Header from './components/Header'
 
 const store = createStore()
 
-export default () => (
+const theme = createMuiTheme({
+  palette: {
+    primary: cyan,
+    secondary: yellow,
+    type: 'dark',
+  },
+})
+
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+}
+
+type Props = {
+  classes: Object,
+}
+
+export default withStyles(styles)(({ classes }: Props) => (
   <Provider store={store}>
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">
-          Welcome to React
-        </h1>
-      </header>
-      <p className="App-intro">
-        To get started, edit
-        <code>
-          src/App.js
-        </code>
-        and save to reload.
-      </p>
-    </div>
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className={classes.root}>
+        <Header />
+      </div>
+    </MuiThemeProvider>
   </Provider>
-)
+))
