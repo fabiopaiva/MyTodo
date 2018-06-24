@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import { setVisibilityFilter } from '../../actions/VisibilityFilterActions'
+import { clearCompleted } from '../../actions/TodoActions'
 import type { FilterType } from '../../actions/VisibilityFilterActions'
 import types from '../../constants/ActionTypes'
 
@@ -25,6 +26,8 @@ type Props = {
   left: number,
   setVisibilityFilter: (filter: FilterType) => void,
   filter: string,
+  clearCompleted: () => void,
+  hasCompleted: boolean,
 }
 
 const TodoFooter = ({
@@ -32,6 +35,8 @@ const TodoFooter = ({
   left,
   setVisibilityFilter: fnSetVisibilityFilter,
   filter,
+  clearCompleted: fnClearCompleted,
+  hasCompleted,
 }: Props) => (
   <Grid container justify="space-between" alignItems="center" className={classes.root}>
     <Grid xs={3} item>
@@ -71,17 +76,28 @@ const TodoFooter = ({
         Completed
       </Button>
     </Grid>
-    <Grid xs={2} item>
-      <Button variant="text" size="small" className={classes.button}>
-        Clear Completed
-      </Button>
-    </Grid>
+    {hasCompleted && (
+      <Grid xs={2} item>
+        <Button
+          variant="text"
+          size="small"
+          className={classes.button}
+          onClick={() => fnClearCompleted()}
+        >
+          Clear Completed
+        </Button>
+      </Grid>
+    )}
+
   </Grid>
 )
 
 const mapStateToProps = state => ({
   left: state.todos.items.filter(item => !item.completed).length,
+  hasCompleted: !!state.todos.items.find(item => item.completed),
   filter: state.visibilityFilter,
 })
 
-export default withStyles(styles)(connect(mapStateToProps, { setVisibilityFilter })(TodoFooter))
+export default withStyles(styles)(
+  connect(mapStateToProps, { setVisibilityFilter, clearCompleted })(TodoFooter),
+)

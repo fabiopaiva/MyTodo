@@ -54,4 +54,11 @@ describe('actions', () => {
     }
     expect(actions.setAllTodosStatus(false)).toEqual(expectedAnotherAction)
   })
+
+  it('should create an action to clean all completeds', () => {
+    const expectedAction = {
+      type: types.TODO_CLEAR_COMPLETED,
+    }
+    expect(actions.clearCompleted()).toEqual(expectedAction)
+  })
 })

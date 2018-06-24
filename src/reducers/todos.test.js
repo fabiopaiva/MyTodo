@@ -255,4 +255,34 @@ describe('todos reducer', () => {
       ],
     })
   })
+
+  it('should handle TODO_CLEAR_COMPLETED', () => {
+    expect(
+      reducer({
+        items: [
+          {
+            text: 'Use Redux',
+            completed: true,
+            id: 1,
+          },
+          {
+            text: 'Finish assignment',
+            completed: false,
+            id: 2,
+          },
+        ],
+      },
+      {
+        type: types.TODO_CLEAR_COMPLETED,
+      }),
+    ).toEqual({
+      items: [
+        {
+          text: 'Finish assignment',
+          completed: false,
+          id: 2,
+        },
+      ],
+    })
+  })
 })

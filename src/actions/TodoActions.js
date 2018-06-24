@@ -26,3 +26,7 @@ export const setAllTodosStatus = (isCompleted: boolean) => ({
   type: types.TODO_SET_ALL_STATUS,
   isCompleted,
 })
+
+export const clearCompleted = () => ({
+  type: types.TODO_CLEAR_COMPLETED,
+})
