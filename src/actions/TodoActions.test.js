@@ -13,7 +13,7 @@ describe('actions', () => {
   })
 
   it('should create an action to remove a todo', () => {
-    const id = 'abcd-efgh-ijkl-mnop'
+    const id = 1
     const expectedAction = {
       type: types.TODO_REMOVE,
       id,
@@ -22,7 +22,7 @@ describe('actions', () => {
   })
 
   it('should create an action to update a todo', () => {
-    const id = 'abcd-efgh-ijkl-mnop'
+    const id = 1
     const text = 'Finish my docs'
     const expectedAction = {
       type: types.TODO_UPDATE,
@@ -32,25 +32,12 @@ describe('actions', () => {
     expect(actions.updateTodo(id, text)).toEqual(expectedAction)
   })
 
-  it('should create an action to set completed a todo', () => {
-    const id = 'abcd-efgh-ijkl-mnop'
-    const completed = true
+  it('should create an action to toggle a todo', () => {
+    const id = 1
     const expectedAction = {
-      type: types.TODO_SET_COMPLETED,
+      type: types.TODO_TOGGLE,
       id,
-      completed,
     }
-    expect(actions.setTodoCompleted(id, completed)).toEqual(expectedAction)
-  })
-
-  it('should create an action to set not completed a todo', () => {
-    const id = 'abcd-efgh-ijkl-mnop'
-    const completed = false
-    const expectedAction = {
-      type: types.TODO_SET_COMPLETED,
-      id,
-      completed,
-    }
-    expect(actions.setTodoCompleted(id, completed)).toEqual(expectedAction)
+    expect(actions.toggleTodo(id)).toEqual(expectedAction)
   })
 })

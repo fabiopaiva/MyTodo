@@ -6,19 +6,18 @@ export const addTodo = (text: string) => ({
   text,
 })
 
-export const removeTodo = (id: string) => ({
+export const removeTodo = (id: number) => ({
   type: types.TODO_REMOVE,
   id,
 })
 
-export const updateTodo = (id: string, text: string) => ({
+export const updateTodo = (id: number, text: string) => ({
   type: types.TODO_UPDATE,
   id,
   text,
 })
 
-export const setTodoCompleted = (id: string, isCompleted: boolean) => ({
-  type: types.TODO_SET_COMPLETED,
+export const toggleTodo = (id: number) => ({
+  type: types.TODO_TOGGLE,
   id,
-  completed: isCompleted,
 })
