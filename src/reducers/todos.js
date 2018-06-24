@@ -57,6 +57,11 @@ export default (state: State = initialState, action: Action): State => {
         ...state,
         items: state.items.map(todo => ({ ...todo, completed: action.isCompleted })),
       }
+    case types.TODO_CLEAR_COMPLETED:
+      return {
+        ...state,
+        items: state.items.filter(todo => !todo.completed),
+      }
     default:
       return state
   }
