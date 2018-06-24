@@ -9,6 +9,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import createStore from './store'
 import Header from './components/Header'
 import TodoInput from './components/TodoInput'
+import TodoList from './components/TodoList'
 
 const store = createStore()
 
@@ -16,6 +17,7 @@ const theme = createMuiTheme({
   palette: {
     primary: cyan,
     secondary: yellow,
+    type: 'dark',
   },
 })
 
@@ -25,6 +27,7 @@ export default () => (
       <CssBaseline />
       <Header />
       <TodoInput />
+      <TodoList />
     </MuiThemeProvider>
   </Provider>
 )

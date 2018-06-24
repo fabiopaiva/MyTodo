@@ -6,7 +6,7 @@ type State = {
   +items: Array<Todo>
 }
 
-type Action = { +type: string } 
+type Action = { +type: string }
   | { +type: types.TODO_ADD, id: number, text: string }
   | { +type: types.TODO_REMOVE, id: number }
   | { +type: types.TODO_UPDATE, id: number, text: string }
@@ -23,7 +23,8 @@ export default (state: State = initialState, action: Action): State => {
         ...state,
         items: [
           {
-            id: action.id,
+            // id: action.id,
+            id: Date.now(), // @TODO: replace with the id properly
             text: action.text,
             completed: false
           },
@@ -33,7 +34,7 @@ export default (state: State = initialState, action: Action): State => {
     case types.TODO_UPDATE:
       return {
         ...state,
-        items: state.items.map(todo => (todo.id === action.id) ? 
+        items: state.items.map(todo => (todo.id === action.id) ?
           { ...todo, text: action.text }
           : todo
         )
@@ -46,7 +47,7 @@ export default (state: State = initialState, action: Action): State => {
       case types.TODO_TOGGLE:
       return {
         ...state,
-        items: state.items.map(todo => (todo.id === action.id) ? 
+        items: state.items.map(todo => (todo.id === action.id) ?
           { ...todo, completed: !todo.completed }
           : todo
         )
