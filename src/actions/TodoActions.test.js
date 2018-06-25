@@ -30,6 +30,7 @@ describe('actions', () => {
     }
     actions.saveTodo(todo)(dispatch, getState)
     expect(getState).toBeCalled()
+    expectedAction.todo.id = expect.any(String)
     expect(dispatch).toBeCalledWith(expectedAction)
   })
 

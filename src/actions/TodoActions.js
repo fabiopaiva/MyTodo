@@ -4,20 +4,55 @@ import firebase from '../firebase'
 import type { User } from '../types/user'
 import type { Todo } from '../types/todo'
 
-export const listenFirebaseDBRef = () => (dispatch: Function, getState: Function) => {
+export const listenFirebaseDBRef = () => async (dispatch: Function, getState: Function) => {
   const { user }: { user: User } = getState()
-  const ref = firebase.database().ref(`/todo/${user.profile.uid}`).orderByChild('priority')
-  ref.on('value', (snapshot) => {
-    const items = []
-    snapshot.forEach((item) => {
-      items.unshift({ ...item.val(), id: item.key })
-    })
+  const snapshot = await firebase.database().ref(`/todo/${user.profile.uid}`).orderByChild('priority').once('value')
+  const items = []
+  snapshot.forEach((item) => {
+    items.unshift({ ...item.val(), id: item.key })
+  })
+  dispatch({
+    type: types.TODO_SYNC,
+    items,
+  })
+
+  const ref = firebase.database().ref(`/todo/${user.profile.uid}`)
+  ref.on('child_added', (data) => {
     dispatch({
-      type: types.TODO_SYNC,
-      items,
+      type: types.TODO_ADD,
+      todo: { ...data.val(), id: data.key },
     })
   })
-  return { remove: () => ref.off('value') }
+
+  ref.on('child_changed', (data) => {
+    dispatch({
+      type: types.TODO_UPDATE,
+      todo: { ...data.val(), id: data.key },
+    })
+  })
+
+  ref.on('child_removed', (data) => {
+    dispatch({
+      type: types.TODO_REMOVE,
+      id: data.key,
+    })
+  })
+
+  ref.orderByChild('priority').on('child_moved', (data) => {
+    dispatch({
+      type: types.TODO_ADD,
+      todo: { ...data.val(), id: data.key },
+    })
+  })
+
+  return {
+    remove: () => {
+      ref.off('child_added')
+      ref.off('child_changed')
+      ref.off('child_removed')
+      ref.off('child_moved')
+    },
+  }
 }
 
 export const saveTodo = (todo: Todo) => (dispatch: Function, getState: Function) => {
@@ -31,11 +66,12 @@ export const saveTodo = (todo: Todo) => (dispatch: Function, getState: Function)
     delete clone.id
     firebase.database().ref(`/todo/${user.profile.uid}/${todo.id}`).set(clone)
   } else {
+    const newItem = firebase.database().ref(`/todo/${user.profile.uid}`).push()
+    newItem.set(todo)
     dispatch({
       type: types.TODO_ADD,
-      todo,
+      todo: { ...todo, id: newItem.key },
     })
-    firebase.database().ref(`/todo/${user.profile.uid}`).push().set(todo)
   }
 }
 

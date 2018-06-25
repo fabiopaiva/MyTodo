@@ -26,14 +26,16 @@ export default (state: State = initialState, action: Action): State => {
       return action.todo
         ? {
           ...state,
-          items: [action.todo].concat(state.items).sort((a, b) => b.priority - a.priority),
+          items: [action.todo]
+            .concat(state.items.filter(item => item.id !== action.todo.id))
+            .sort((a, b) => b.priority - a.priority),
         }
         : state
     case types.TODO_UPDATE:
       return {
         ...state,
-        items: state.items.map(todo => ((todo.id === action.id)
-          ? { ...todo, text: action.text }
+        items: state.items.map(todo => ((todo.id === action.todo.id)
+          ? { ...todo, ...action.todo }
           : todo
         )),
       }

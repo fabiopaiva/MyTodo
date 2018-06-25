@@ -103,9 +103,11 @@ describe('todos reducer', () => {
       },
       {
         type: types.TODO_UPDATE,
-        text: 'Use Redux updated',
-        id: 'abc',
-        priority: 0,
+        todo: {
+          text: 'Use Redux updated',
+          id: 'abc',
+          priority: 0,
+        },
       }),
     ).toEqual({
       synced: false,
@@ -115,6 +117,38 @@ describe('todos reducer', () => {
           completed: false,
           id: 'abc',
           priority: 0,
+        },
+      ],
+    })
+
+    expect(
+      reducer({
+        synced: false,
+        items: [
+          {
+            text: 'Use Redux',
+            completed: false,
+            id: 'abc',
+            priority: 0,
+          },
+        ],
+      },
+      {
+        type: types.TODO_UPDATE,
+        todo: {
+          text: 'Use Redux updated',
+          id: 'abc',
+          priority: 1,
+        },
+      }),
+    ).toEqual({
+      synced: false,
+      items: [
+        {
+          text: 'Use Redux updated',
+          completed: false,
+          id: 'abc',
+          priority: 1,
         },
       ],
     })
