@@ -14,10 +14,12 @@ describe('Todo Filter actions', () => {
     expect(actions.authSuccess(profile)).toEqual(expectedAction)
   })
 
-  it('should create an action to logout', () => {
+  it('should create an action to logout', async () => {
+    const dispatch = jest.fn()
     const expectedAction = {
       type: types.USER_LOGOUT,
     }
-    expect(actions.logout()).toEqual(expectedAction)
+    await actions.logout()(dispatch)
+    expect(dispatch).toBeCalledWith(expectedAction)
   })
 })
