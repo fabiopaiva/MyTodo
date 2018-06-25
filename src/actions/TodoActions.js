@@ -2,51 +2,80 @@
 import types from '../constants/ActionTypes'
 import firebase from '../firebase'
 import type { User } from '../types/user'
-
-const database = firebase.database()
-
-export const addTodo = (text: string) => (dispatch: Function, getState: Function) => {
-  const { user }: { user: User } = getState()
-  const newItem = database.ref(`/todo/${user.profile.uid}`).push()
-  newItem.set({ text, uid: user.profile.uid })
-}
+import type { Todo } from '../types/todo'
 
 export const listenFirebaseDBRef = () => (dispatch: Function, getState: Function) => {
   const { user }: { user: User } = getState()
-  const ref = database.ref(`/todo/${user.profile.uid}`)
+  const ref = firebase.database().ref(`/todo/${user.profile.uid}`)
   ref.on('value', (snapshot) => {
-    const val = snapshot.val()
-    if (val) {
-      dispatch({
-        type: types.TODO_SYNC,
-        items: snapshot.val(),
-      })
-    }
+    dispatch({
+      type: types.TODO_SYNC,
+      items: snapshot.val(),
+    })
   })
   return { remove: () => ref.off('value') }
 }
 
-export const removeTodo = (id: number) => ({
-  type: types.TODO_REMOVE,
-  id,
-})
+export const saveTodo = (todo: Todo) => (dispatch: Function, getState: Function) => {
+  const { user }: { user: User } = getState()
+  if (todo.id) {
+    dispatch({
+      type: types.TODO_UPDATE,
+      todo,
+    })
+    firebase.database().ref(`/todo/${user.profile.uid}/${todo.id}`).set(todo)
+  } else {
+    dispatch({
+      type: types.TODO_ADD,
+      todo,
+    })
+    firebase.database().ref(`/todo/${user.profile.uid}`).push().set(todo)
+  }
+}
 
-export const updateTodo = (id: number, text: string) => ({
-  type: types.TODO_UPDATE,
-  id,
-  text,
-})
+export const removeTodo = (id: string) => (dispatch: Function, getState: Function) => {
+  const { user }: { user: User } = getState()
+  dispatch({
+    type: types.TODO_REMOVE,
+    id,
+  })
+  firebase.database().ref(`/todo/${user.profile.uid}/${id}`).set(null)
+}
 
-export const toggleTodo = (id: number) => ({
-  type: types.TODO_TOGGLE,
-  id,
-})
+export const toggleTodo = (todo: Todo) => (dispatch: Function) => {
+  const update = { ...todo, completed: !todo.completed }
+  dispatch({
+    type: types.TODO_TOGGLE,
+    todo,
+  })
+  dispatch(saveTodo(update))
+}
 
-export const setAllTodosStatus = (isCompleted: boolean) => ({
-  type: types.TODO_SET_ALL_STATUS,
-  isCompleted,
-})
+export const setAllTodosStatus = (completed: boolean) => (
+  dispatch: Function, getState: Function,
+) => {
+  const { user, todos: { items } }: { user: User, todos: { items: Array<Todo> } } = getState()
+  const updates = items.reduce((acc, item) => {
+    acc[`/todo/${user.profile.uid}/${item.id}`] = { ...item, completed }
+    return acc
+  }, {})
+  dispatch({
+    type: types.TODO_SET_ALL_STATUS,
+    completed,
+  })
+  firebase.database().ref().update(updates)
+}
 
-export const clearCompleted = () => ({
-  type: types.TODO_CLEAR_COMPLETED,
-})
+export const clearCompleted = () => (
+  dispatch: Function, getState: Function,
+) => {
+  const { user, todos: { items } }: { user: User, todos: { items: Array<Todo> } } = getState()
+  const updates = items.filter(item => item.completed).reduce((acc, item) => {
+    acc[`/todo/${user.profile.uid}/${item.id}`] = null
+    return acc
+  }, {})
+  dispatch({
+    type: types.TODO_CLEAR_COMPLETED,
+  })
+  firebase.database().ref().update(updates)
+}

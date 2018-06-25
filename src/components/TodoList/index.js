@@ -18,7 +18,7 @@ const styles = theme => ({
   },
   wrapper: {
     flexGrow: 1,
-    maxWidth: 550,
+    maxWidth: 800,
     margin: theme.spacing.unit,
   },
 })
@@ -39,6 +39,8 @@ class TodoList extends React.Component<Props> {
   componentWillUnmount() {
     this.dbListener.remove()
   }
+
+  dbListener: { remove: Function }
 
   render() {
     const {
@@ -67,7 +69,9 @@ class TodoList extends React.Component<Props> {
                 />
               </Grid>
               <List component="nav">
-                {items.filter(criteria).map(item => <TodoItem key={item.id} item={item} />)}
+                {items.filter(criteria).map(
+                  item => <TodoItem key={item.id || Date.now()} item={item} />,
+                )}
               </List>
               <TodoFooter />
             </Paper>

@@ -13,14 +13,15 @@ describe('todos reducer', () => {
     expect(
       reducer(undefined, {
         type: types.TODO_ADD,
-        id: 1,
-        text: 'Run the tests',
+        todo: {
+          id: 'abc',
+          text: 'Run the tests',
+        },
       }),
     ).toEqual({
       items: [{
         text: 'Run the tests',
-        completed: false,
-        id: 1,
+        id: 'abc',
       }],
     })
 
@@ -29,27 +30,26 @@ describe('todos reducer', () => {
         items: [
           {
             text: 'Use Redux',
-            completed: false,
-            id: 1,
+            id: 'abc',
           },
         ],
       },
       {
         type: types.TODO_ADD,
-        text: 'Run the tests',
-        id: 2,
+        todo: {
+          text: 'Run the tests',
+          id: 'def',
+        },
       }),
     ).toEqual({
       items: [
         {
           text: 'Run the tests',
-          completed: false,
-          id: 2,
+          id: 'def',
         },
         {
           text: 'Use Redux',
-          completed: false,
-          id: 1,
+          id: 'abc',
         },
       ],
     })
@@ -62,13 +62,13 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: false,
-            id: 1,
+            id: 'abc',
           },
         ],
       },
       {
         type: types.TODO_REMOVE,
-        id: 1,
+        id: 'abc',
       }),
     ).toEqual({
       items: [],
@@ -82,21 +82,21 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: false,
-            id: 1,
+            id: 'abc',
           },
         ],
       },
       {
         type: types.TODO_UPDATE,
         text: 'Use Redux updated',
-        id: 1,
+        id: 'abc',
       }),
     ).toEqual({
       items: [
         {
           text: 'Use Redux updated',
           completed: false,
-          id: 1,
+          id: 'abc',
         },
       ],
     })
@@ -109,20 +109,20 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: false,
-            id: 1,
+            id: 'abc',
           },
         ],
       },
       {
         type: types.TODO_TOGGLE,
-        id: 1,
+        id: 'abc',
       }),
     ).toEqual({
       items: [
         {
           text: 'Use Redux',
           completed: true,
-          id: 1,
+          id: 'abc',
         },
       ],
     })
@@ -133,20 +133,20 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: true,
-            id: 1,
+            id: 'abc',
           },
         ],
       },
       {
         type: types.TODO_TOGGLE,
-        id: 1,
+        id: 'abc',
       }),
     ).toEqual({
       items: [
         {
           text: 'Use Redux',
           completed: false,
-          id: 1,
+          id: 'abc',
         },
       ],
     })
@@ -159,12 +159,12 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: false,
-            id: 1,
+            id: 'abc',
           },
           {
             text: 'Finish assignment',
             completed: false,
-            id: 2,
+            id: 'def',
           },
         ],
       },
@@ -177,12 +177,12 @@ describe('todos reducer', () => {
         {
           text: 'Use Redux',
           completed: true,
-          id: 1,
+          id: 'abc',
         },
         {
           text: 'Finish assignment',
           completed: true,
-          id: 2,
+          id: 'def',
         },
       ],
     })
@@ -193,12 +193,12 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: true,
-            id: 1,
+            id: 'abc',
           },
           {
             text: 'Finish assignment',
             completed: true,
-            id: 2,
+            id: 'def',
           },
         ],
       },
@@ -211,12 +211,12 @@ describe('todos reducer', () => {
         {
           text: 'Use Redux',
           completed: false,
-          id: 1,
+          id: 'abc',
         },
         {
           text: 'Finish assignment',
           completed: false,
-          id: 2,
+          id: 'def',
         },
       ],
     })
@@ -227,12 +227,12 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: false,
-            id: 1,
+            id: 'abc',
           },
           {
             text: 'Finish assignment',
             completed: true,
-            id: 2,
+            id: 'def',
           },
         ],
       },
@@ -245,12 +245,12 @@ describe('todos reducer', () => {
         {
           text: 'Use Redux',
           completed: true,
-          id: 1,
+          id: 'abc',
         },
         {
           text: 'Finish assignment',
           completed: true,
-          id: 2,
+          id: 'def',
         },
       ],
     })
@@ -263,12 +263,12 @@ describe('todos reducer', () => {
           {
             text: 'Use Redux',
             completed: true,
-            id: 1,
+            id: 'abc',
           },
           {
             text: 'Finish assignment',
             completed: false,
-            id: 2,
+            id: 'def',
           },
         ],
       },
@@ -280,7 +280,7 @@ describe('todos reducer', () => {
         {
           text: 'Finish assignment',
           completed: false,
-          id: 2,
+          id: 'def',
         },
       ],
     })

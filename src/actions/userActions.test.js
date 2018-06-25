@@ -5,12 +5,13 @@ import types from '../constants/ActionTypes'
 describe('Todo Filter actions', () => {
   it('should create an action to authenticate successfully', () => {
     const profile = {
-      id: 1,
+      uid: 'abc',
     }
     const expectedAction = {
       type: types.USER_AUTH_SUCCESS,
       profile,
     }
+    // $FlowFixMe too much fields to create a copy of FirebaseUser properly
     expect(actions.authSuccess(profile)).toEqual(expectedAction)
   })
 

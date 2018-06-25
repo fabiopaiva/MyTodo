@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import FormControl from '@material-ui/core/FormControl'
 import TextField from '@material-ui/core/TextField'
 import Paper from '@material-ui/core/Paper'
-import { addTodo, updateTodo } from '../../actions/TodoActions'
+import { saveTodo } from '../../actions/TodoActions'
 import type { Todo } from '../../types/todo'
 
 const styles = theme => ({
@@ -15,7 +15,7 @@ const styles = theme => ({
   },
   inputWrapper: {
     flexGrow: 1,
-    maxWidth: 550,
+    maxWidth: 800,
     margin: theme.spacing.unit,
     padding: theme.spacing.unit * 2,
   },
@@ -26,8 +26,7 @@ const styles = theme => ({
 
 type Props = {
   classes: Object,
-  addTodo: (text: string) => void,
-  updateTodo: (id: number, text: string) => void,
+  saveTodo: (todo: Todo) => void,
   item?: Todo,
   onUpdate?: () => void,
   inputRef?: (ref: HTMLInputElement) => void,
@@ -79,8 +78,7 @@ class TodoInput extends React.Component<Props, State> {
 
   handleKeyUp = (event: KeyboardEvent) => {
     const {
-      addTodo: fnAddTodo,
-      updateTodo: fnUpdateTodo,
+      saveTodo: fnSaveTodo,
       item,
       onUpdate,
     } = this.props
@@ -88,12 +86,13 @@ class TodoInput extends React.Component<Props, State> {
     if (event.key === 'Enter') {
       this.setState({ inputValue: '' })
       if (item) {
-        fnUpdateTodo(item.id, inputValue)
+        item.text = inputValue
+        fnSaveTodo(item)
         if (onUpdate) {
           onUpdate()
         }
       } else {
-        fnAddTodo(inputValue)
+        fnSaveTodo({ text: inputValue })
       }
     }
   }
@@ -125,4 +124,4 @@ class TodoInput extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(connect(undefined, { addTodo, updateTodo })(TodoInput))
+export default withStyles(styles)(connect(undefined, { saveTodo })(TodoInput))
