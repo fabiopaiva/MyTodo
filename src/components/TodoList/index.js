@@ -8,7 +8,7 @@ import List from '@material-ui/core/List'
 import Checkbox from '@material-ui/core/Checkbox'
 import TodoItem from '../TodoItem'
 import TodoFooter from '../TodoFooter'
-import { setAllTodosStatus } from '../../actions/TodoActions'
+import { setAllTodosStatus, listenFirebaseDBRef } from '../../actions/TodoActions'
 import types from '../../constants/ActionTypes'
 import type { Todo } from '../../types/todo'
 
@@ -28,37 +28,54 @@ type Props = {
   items: Array<Todo>,
   setAllTodosStatus: (status: boolean) => void,
   filter: string,
+  listenFirebaseDBRef: Function,
 }
+class TodoList extends React.Component<Props> {
+  componentDidMount() {
+    const { listenFirebaseDBRef: fnListenFirebaseDBRef } = this.props
+    this.dbListener = fnListenFirebaseDBRef()
+  }
 
-const TodoList = ({ classes, items, setAllTodosStatus: fnSetAllTodosStatus, filter }: Props) => {
-  if (!items.length) return null
+  componentWillUnmount() {
+    this.dbListener.remove()
+  }
 
-  const isAllItemsChecked = items.filter(item => item.completed).length === items.length
+  render() {
+    const {
+      classes,
+      items,
+      setAllTodosStatus: fnSetAllTodosStatus,
+      filter,
+    } = this.props
+    if (!items.length) return null
 
-  const criteria = item => filter === types.SHOW_ALL
-    || (filter === types.SHOW_ACTIVE && !item.completed)
-    || (filter === types.SHOW_COMPLETED && item.completed)
+    const isAllItemsChecked = items.filter(item => item.completed).length === items.length
 
-  return (
-    <Grid container className={classes.root}>
-      <Grid item xs={12}>
-        <Grid container justify="center">
-          <Paper className={classes.wrapper} elevation={0}>
-            <Grid container justify="flex-end">
-              <Checkbox
-                checked={isAllItemsChecked}
-                onChange={() => fnSetAllTodosStatus(!isAllItemsChecked)}
-              />
-            </Grid>
-            <List component="nav">
-              {items.filter(criteria).map(item => <TodoItem key={item.id} item={item} />)}
-            </List>
-            <TodoFooter />
-          </Paper>
+    const criteria = item => filter === types.SHOW_ALL
+      || (filter === types.SHOW_ACTIVE && !item.completed)
+      || (filter === types.SHOW_COMPLETED && item.completed)
+
+    return (
+      <Grid container className={classes.root}>
+        <Grid item xs={12}>
+          <Grid container justify="center">
+            <Paper className={classes.wrapper} elevation={0}>
+              <Grid container justify="flex-end">
+                <Checkbox
+                  checked={isAllItemsChecked}
+                  onChange={() => fnSetAllTodosStatus(!isAllItemsChecked)}
+                />
+              </Grid>
+              <List component="nav">
+                {items.filter(criteria).map(item => <TodoItem key={item.id} item={item} />)}
+              </List>
+              <TodoFooter />
+            </Paper>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
-  )
+    )
+  }
 }
 
 const mapStateToProps = state => ({
@@ -66,4 +83,6 @@ const mapStateToProps = state => ({
   filter: state.visibilityFilter,
 })
 
-export default withStyles(styles)(connect(mapStateToProps, { setAllTodosStatus })(TodoList))
+export default withStyles(styles)(
+  connect(mapStateToProps, { setAllTodosStatus, listenFirebaseDBRef })(TodoList),
+)

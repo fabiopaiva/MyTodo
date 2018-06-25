@@ -12,6 +12,7 @@ type Action = { +type: string }
   | { +type: types.TODO_UPDATE, id: number, text: string }
   | { +type: types.TODO_TOGGLE, id: number }
   | { +type: types.TODO_SET_ALL_STATUS, isCompleted: boolean }
+  | { +type: types.TODO_SYNC, isCompleted: boolean }
 
 const initialState = {
   items: [],
@@ -61,6 +62,14 @@ export default (state: State = initialState, action: Action): State => {
       return {
         ...state,
         items: state.items.filter(todo => !todo.completed),
+      }
+    case types.TODO_SYNC:
+      return {
+        ...state,
+        items: Object.keys(action.items).map(key => ({
+          id: key,
+          ...action.items[key],
+        })),
       }
     default:
       return state

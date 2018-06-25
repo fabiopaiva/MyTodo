@@ -85,7 +85,7 @@ class TodoInput extends React.Component<Props, State> {
       onUpdate,
     } = this.props
     const { inputValue } = this.state
-    if (event.code === 'Enter') {
+    if (event.key === 'Enter') {
       this.setState({ inputValue: '' })
       if (item) {
         fnUpdateTodo(item.id, inputValue)

@@ -3,15 +3,6 @@ import * as actions from './TodoActions'
 import types from '../constants/ActionTypes'
 
 describe('actions', () => {
-  it('should create an action to add a todo', () => {
-    const text = 'Finish docs'
-    const expectedAction = {
-      type: types.TODO_ADD,
-      text,
-    }
-    expect(actions.addTodo(text)).toEqual(expectedAction)
-  })
-
   it('should create an action to remove a todo', () => {
     const id = 1
     const expectedAction = {
