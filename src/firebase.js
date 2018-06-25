@@ -13,4 +13,5 @@ const config = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 }
-export default firebase.initializeApp(config)
+// $FlowFixMe the variables come from env
+export default firebase.initializeApp(config).firebase_ // eslint-disable-line no-underscore-dangle
