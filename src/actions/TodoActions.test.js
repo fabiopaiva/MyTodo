@@ -2,6 +2,18 @@
 import * as actions from './TodoActions'
 import types from '../constants/ActionTypes'
 
+jest.mock('../../firebase', () => {
+  const firebasemock = require('firebase-mock') // eslint-disable-line
+  const mockdatabase = new firebasemock.MockFirebase()
+  const mockauth = new firebasemock.MockFirebase()
+  const mocksdk = new firebasemock.MockFirebaseSdk(
+    path => (path ? mockdatabase.child(path) : mockdatabase), () => mockauth,
+  )
+  const firebase = mocksdk.initializeApp()
+  global.firebase = firebase
+  return firebase
+})
+
 describe('actions', () => {
   const dispatch = jest.fn()
   const getState = jest.fn()
@@ -11,7 +23,7 @@ describe('actions', () => {
   })
 
   it('should create an action to save a todo', () => {
-    const todo = { text: 'Finish my docs' }
+    const todo = { text: 'Finish my docs', priority: 0 }
     const expectedAction = {
       type: types.TODO_ADD,
       todo,
@@ -22,7 +34,7 @@ describe('actions', () => {
   })
 
   it('should create an action to update a todo', () => {
-    const todo = { id: 'abc', text: 'Finish my docs' }
+    const todo = { id: 'abc', text: 'Finish my docs', priority: 0 }
     const expectedAction = {
       type: types.TODO_UPDATE,
       todo,
@@ -44,7 +56,7 @@ describe('actions', () => {
   })
 
   it('should create an action to toggle a todo', () => {
-    const todo = { id: 'abc', text: 'Finish assignment' }
+    const todo = { id: 'abc', text: 'Finish assignment', priority: 0 }
     const expectedAction = {
       type: types.TODO_TOGGLE,
       todo,

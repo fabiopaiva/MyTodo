@@ -8,11 +8,24 @@ import Checkbox from '@material-ui/core/Checkbox'
 import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import teal from '@material-ui/core/colors/teal'
+import yellow from '@material-ui/core/colors/yellow'
+import orange from '@material-ui/core/colors/orange'
+import red from '@material-ui/core/colors/red'
 import { withStyles } from '@material-ui/core/styles'
 import TodoInput from '../TodoInput'
 import { toggleTodo, removeTodo } from '../../actions/TodoActions'
 
 import type { Todo } from '../../types/todo'
+
+const priorityColors = [
+  '#000000',
+  teal[900],
+  yellow[900],
+  orange[900],
+  red[900],
+]
 
 const styles = {
   pending: {
@@ -21,6 +34,12 @@ const styles = {
   completed: {
     textDecoration: 'line-through',
   },
+  ...priorityColors.reduce((acc, item, index) => {
+    acc[`priority${index}`] = {
+      color: item,
+    }
+    return acc
+  }, {}),
 }
 
 type Props = {
@@ -39,10 +58,6 @@ class TodoItem extends React.Component<Props, State> {
     isEditing: false,
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('click', this.handleClickOutside)
-  }
-
   handleToggle = () => {
     const { toggleTodo: fnToggle, item } = this.props
     if (item.id) {
@@ -58,17 +73,11 @@ class TodoItem extends React.Component<Props, State> {
   }
 
   handleItemClick = () => {
-    this.setState(
-      { isEditing: true },
-      () => setTimeout(() => window.addEventListener('click', this.handleClickOutside), 0),
-    )
+    this.setState({ isEditing: true })
   }
 
-  handleClickOutside = (event) => {
-    if (event.target !== this.inputRefEditing) {
-      this.setState({ isEditing: false })
-      window.removeEventListener('click', this.handleClickOutside)
-    }
+  handleClickOutside = () => {
+    this.setState({ isEditing: false })
   }
 
   handleInputRefEditing = (ref: ?HTMLInputElement) => {
@@ -80,7 +89,6 @@ class TodoItem extends React.Component<Props, State> {
 
   handleFinishEditing = () => {
     this.setState({ isEditing: false })
-    window.removeEventListener('click', this.handleClickOutside)
   }
 
   inputRefEditing: ?HTMLInputElement
@@ -90,17 +98,27 @@ class TodoItem extends React.Component<Props, State> {
     const { isEditing } = this.state
 
     return isEditing ? (
-      <TodoInput
-        item={item}
-        onUpdate={this.handleFinishEditing}
-        inputRef={this.handleInputRefEditing}
-      />
+      <ClickAwayListener onClickAway={this.handleClickOutside}>
+        <TodoInput
+          item={item}
+          onUpdate={this.handleFinishEditing}
+          inputRef={this.handleInputRefEditing}
+        />
+      </ClickAwayListener>
     )
       : (
-        <ListItem dense button onClick={this.handleItemClick} className={!item.id ? classes.pending : ''}>
+        <ListItem
+          dense
+          button
+          onClick={this.handleItemClick}
+          className={[
+            !item.id ? classes.pending : '',
+            !item.completed ? classes[`priority${item.priority}`] : '',
+          ].join(' ')}
+        >
           <ListItemText
             primary={(
-              <Typography color={item.completed ? 'secondary' : 'primary'} variant="subheading">
+              <Typography color={item.completed ? 'secondary' : 'inherit'} variant="subheading">
                 {item.text}
               </Typography>
             )}

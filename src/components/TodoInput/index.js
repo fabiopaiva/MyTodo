@@ -5,7 +5,10 @@ import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import FormControl from '@material-ui/core/FormControl'
 import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+import Slider from '@material-ui/lab/Slider'
 import Paper from '@material-ui/core/Paper'
+import Button from '@material-ui/core/Button'
 import { saveTodo } from '../../actions/TodoActions'
 import type { Todo } from '../../types/todo'
 
@@ -21,6 +24,7 @@ const styles = theme => ({
   },
   input: {
     width: '100%',
+    marginBottom: 10,
   },
 })
 
@@ -34,13 +38,15 @@ type Props = {
 
 type State = {
   inputValue: string,
+  priority: number,
+  error: boolean,
 }
 
 class TodoInput extends React.Component<Props, State> {
   static defaultProps = {
     item: null,
-    onUpdate: () => {},
-    inputRef: () => {},
+    onUpdate: () => { },
+    inputRef: () => { },
   }
 
   constructor(props: Props) {
@@ -49,6 +55,8 @@ class TodoInput extends React.Component<Props, State> {
 
     this.state = {
       inputValue: item ? item.text : '',
+      priority: item ? item.priority : 0,
+      error: false,
     }
   }
 
@@ -65,7 +73,11 @@ class TodoInput extends React.Component<Props, State> {
   }
 
   handleChange = (event: SyntheticInputEvent<*>) => {
-    this.setState({ inputValue: event.target.value })
+    this.setState({ [event.target.name]: event.target.value, error: false })
+  }
+
+  handlePriorityChange = (event: SyntheticInputEvent<*>, value: number) => {
+    this.setState({ priority: value })
   }
 
   handleInputRef = (ref: HTMLInputElement) => {
@@ -77,22 +89,31 @@ class TodoInput extends React.Component<Props, State> {
   }
 
   handleKeyUp = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      this.save()
+    }
+  }
+
+  save = () => {
     const {
       saveTodo: fnSaveTodo,
       item,
       onUpdate,
     } = this.props
-    const { inputValue } = this.state
-    if (event.key === 'Enter') {
-      this.setState({ inputValue: '' })
+    const { inputValue, priority } = this.state
+    if (inputValue === '') {
+      this.setState({ error: true })
+    } else {
+      this.setState({ inputValue: '', priority: 0 })
       if (item) {
         item.text = inputValue
+        item.priority = priority
         fnSaveTodo(item)
         if (onUpdate) {
           onUpdate()
         }
       } else {
-        fnSaveTodo({ text: inputValue })
+        fnSaveTodo({ text: inputValue, priority })
       }
     }
   }
@@ -101,21 +122,47 @@ class TodoInput extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props
-    const { inputValue } = this.state
+    const { inputValue, priority, error } = this.state
 
     return (
       <Grid container className={classes.root}>
         <Grid item xs={12}>
           <Grid container justify="center">
             <Paper className={classes.inputWrapper}>
-              <FormControl fullWidth className={classes.input}>
-                <TextField
-                  label="What needs to be done?"
-                  value={inputValue}
-                  onChange={this.handleChange}
-                  inputRef={this.handleInputRef}
-                />
-              </FormControl>
+              <Grid direction="row" container alignItems="flex-end" alignContent="center" spacing={24}>
+                <Grid item xs={12} md={4}>
+                  <FormControl fullWidth className={classes.input}>
+                    <TextField
+                      error={error}
+                      name="inputValue"
+                      label="What needs to be done?"
+                      value={inputValue}
+                      onChange={this.handleChange}
+                      inputRef={this.handleInputRef}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Typography>
+                    { /* eslint-disable-next-line react/jsx-one-expression-per-line */ }
+                    Priority ({priority + 1})
+                  </Typography>
+                  <Slider
+                    value={priority}
+                    min={0}
+                    max={4}
+                    step={1}
+                    onChange={this.handlePriorityChange}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Grid container justify="flex-end">
+                    <Button onClick={this.save}>
+                      Save
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Paper>
           </Grid>
         </Grid>

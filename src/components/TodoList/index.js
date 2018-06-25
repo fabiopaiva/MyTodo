@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 import Checkbox from '@material-ui/core/Checkbox'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import TodoItem from '../TodoItem'
 import TodoFooter from '../TodoFooter'
 import { setAllTodosStatus, listenFirebaseDBRef } from '../../actions/TodoActions'
@@ -29,6 +30,7 @@ type Props = {
   setAllTodosStatus: (status: boolean) => void,
   filter: string,
   listenFirebaseDBRef: Function,
+  synced: boolean,
 }
 class TodoList extends React.Component<Props> {
   componentDidMount() {
@@ -48,8 +50,8 @@ class TodoList extends React.Component<Props> {
       items,
       setAllTodosStatus: fnSetAllTodosStatus,
       filter,
+      synced,
     } = this.props
-    if (!items.length) return null
 
     const isAllItemsChecked = items.filter(item => item.completed).length === items.length
 
@@ -62,18 +64,27 @@ class TodoList extends React.Component<Props> {
         <Grid item xs={12}>
           <Grid container justify="center">
             <Paper className={classes.wrapper} elevation={0}>
-              <Grid container justify="flex-end">
-                <Checkbox
-                  checked={!!isAllItemsChecked}
-                  onChange={() => fnSetAllTodosStatus(!isAllItemsChecked)}
-                />
-              </Grid>
-              <List component="nav">
-                {items.filter(criteria).map(
-                  item => <TodoItem key={item.id || Date.now()} item={item} />,
-                )}
-              </List>
-              <TodoFooter />
+              {!synced && (
+                <Grid container justify="center">
+                  <CircularProgress className={classes.progress} size={50} />
+                </Grid>
+              )}
+              {items.length > 0 && (
+                <React.Fragment>
+                  <Grid container justify="flex-end">
+                    <Checkbox
+                      checked={!!isAllItemsChecked}
+                      onChange={() => fnSetAllTodosStatus(!isAllItemsChecked)}
+                    />
+                  </Grid>
+                  <List component="nav">
+                    {items.filter(criteria).map(
+                      item => <TodoItem key={item.id || Date.now()} item={item} />,
+                    )}
+                  </List>
+                  <TodoFooter />
+                </React.Fragment>
+              )}
             </Paper>
           </Grid>
         </Grid>
@@ -85,6 +96,7 @@ class TodoList extends React.Component<Props> {
 const mapStateToProps = state => ({
   items: state.todos.items,
   filter: state.visibilityFilter,
+  synced: state.todos.synced,
 })
 
 export default withStyles(styles)(

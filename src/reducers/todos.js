@@ -3,7 +3,8 @@ import types from '../constants/ActionTypes'
 import type { Todo } from '../types/todo'
 
 type State = {
-  +items: Array<Todo>
+  +items: Array<Todo>,
+  +synced: boolean,
 }
 
 type Action = { +type: string }
@@ -16,6 +17,7 @@ type Action = { +type: string }
 
 const initialState = {
   items: [],
+  synced: false,
 }
 
 export default (state: State = initialState, action: Action): State => {
@@ -24,7 +26,7 @@ export default (state: State = initialState, action: Action): State => {
       return action.todo
         ? {
           ...state,
-          items: [action.todo].concat(state.items),
+          items: [action.todo].concat(state.items).sort((a, b) => b.priority - a.priority),
         }
         : state
     case types.TODO_UPDATE:
@@ -61,10 +63,8 @@ export default (state: State = initialState, action: Action): State => {
     case types.TODO_SYNC:
       return {
         ...state,
-        items: action.items && typeof action.items === 'object' ? Object.keys(action.items).map(key => ({
-          id: key,
-          ...action.items[key],
-        })) : [],
+        items: action.items && typeof action.items === 'object' ? action.items : [],
+        synced: true,
       }
     default:
       return state

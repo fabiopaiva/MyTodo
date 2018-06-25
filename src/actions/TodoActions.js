@@ -6,11 +6,15 @@ import type { Todo } from '../types/todo'
 
 export const listenFirebaseDBRef = () => (dispatch: Function, getState: Function) => {
   const { user }: { user: User } = getState()
-  const ref = firebase.database().ref(`/todo/${user.profile.uid}`)
+  const ref = firebase.database().ref(`/todo/${user.profile.uid}`).orderByChild('priority')
   ref.on('value', (snapshot) => {
+    const items = []
+    snapshot.forEach((item) => {
+      items.unshift({ ...item.val(), id: item.key })
+    })
     dispatch({
       type: types.TODO_SYNC,
-      items: snapshot.val(),
+      items,
     })
   })
   return { remove: () => ref.off('value') }
@@ -23,7 +27,9 @@ export const saveTodo = (todo: Todo) => (dispatch: Function, getState: Function)
       type: types.TODO_UPDATE,
       todo,
     })
-    firebase.database().ref(`/todo/${user.profile.uid}/${todo.id}`).set(todo)
+    const clone = { ...todo }
+    delete clone.id
+    firebase.database().ref(`/todo/${user.profile.uid}/${todo.id}`).set(clone)
   } else {
     dispatch({
       type: types.TODO_ADD,
