@@ -7,12 +7,12 @@ type State = {
 }
 
 type Action = { +type: string }
-  | { +type: types.TODO_ADD, id: number, text: string }
-  | { +type: types.TODO_REMOVE, id: number }
-  | { +type: types.TODO_UPDATE, id: number, text: string }
-  | { +type: types.TODO_TOGGLE, id: number }
-  | { +type: types.TODO_SET_ALL_STATUS, isCompleted: boolean }
-  | { +type: types.TODO_SYNC, isCompleted: boolean }
+  | { +type: types.TODO_ADD, +todo?: Todo }
+  | { +type: types.TODO_REMOVE, +id: number }
+  | { +type: types.TODO_UPDATE, +id: number, +todo?: Todo }
+  | { +type: types.TODO_TOGGLE, +todo?: Todo }
+  | { +type: types.TODO_SET_ALL_STATUS, +completed: boolean }
+  | { +type: types.TODO_SYNC, +items: { [key: string]: Todo } }
 
 const initialState = {
   items: [],
@@ -21,17 +21,12 @@ const initialState = {
 export default (state: State = initialState, action: Action): State => {
   switch (action.type) {
     case types.TODO_ADD:
-      return {
-        ...state,
-        items: [
-          {
-            id: action.id || Date.now(), // @TODO: replace with the id properly
-            text: action.text,
-            completed: false,
-          },
-          ...state.items,
-        ],
-      }
+      return action.todo
+        ? {
+          ...state,
+          items: [action.todo].concat(state.items),
+        }
+        : state
     case types.TODO_UPDATE:
       return {
         ...state,
@@ -56,7 +51,7 @@ export default (state: State = initialState, action: Action): State => {
     case types.TODO_SET_ALL_STATUS:
       return {
         ...state,
-        items: state.items.map(todo => ({ ...todo, completed: action.isCompleted })),
+        items: state.items.map(todo => ({ ...todo, completed: action.completed })),
       }
     case types.TODO_CLEAR_COMPLETED:
       return {
@@ -66,10 +61,10 @@ export default (state: State = initialState, action: Action): State => {
     case types.TODO_SYNC:
       return {
         ...state,
-        items: Object.keys(action.items).map(key => ({
+        items: action.items && typeof action.items === 'object' ? Object.keys(action.items).map(key => ({
           id: key,
           ...action.items[key],
-        })),
+        })) : [],
       }
     default:
       return state

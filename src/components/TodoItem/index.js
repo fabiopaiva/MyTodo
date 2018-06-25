@@ -15,6 +15,9 @@ import { toggleTodo, removeTodo } from '../../actions/TodoActions'
 import type { Todo } from '../../types/todo'
 
 const styles = {
+  pending: {
+    opacity: 0.4,
+  },
   completed: {
     textDecoration: 'line-through',
   },
@@ -22,8 +25,8 @@ const styles = {
 
 type Props = {
   item: Todo,
-  toggleTodo: (id: number) => void,
-  removeTodo: (id: number) => void,
+  toggleTodo: (todo: Todo) => void,
+  removeTodo: (id: string) => void,
   classes: Object,
 }
 
@@ -42,12 +45,16 @@ class TodoItem extends React.Component<Props, State> {
 
   handleToggle = () => {
     const { toggleTodo: fnToggle, item } = this.props
-    fnToggle(item.id)
+    if (item.id) {
+      fnToggle(item)
+    }
   }
 
   handleRemove = () => {
     const { removeTodo: fnRemove, item } = this.props
-    fnRemove(item.id)
+    if (item.id) {
+      fnRemove(item.id)
+    }
   }
 
   handleItemClick = () => {
@@ -90,7 +97,7 @@ class TodoItem extends React.Component<Props, State> {
       />
     )
       : (
-        <ListItem dense button onClick={this.handleItemClick}>
+        <ListItem dense button onClick={this.handleItemClick} className={!item.id ? classes.pending : ''}>
           <ListItemText
             primary={(
               <Typography color={item.completed ? 'secondary' : 'primary'} variant="subheading">
@@ -100,7 +107,7 @@ class TodoItem extends React.Component<Props, State> {
             className={item.completed ? classes.completed : ''}
           />
           <ListItemSecondaryAction>
-            <Checkbox checked={item.completed} onChange={this.handleToggle} />
+            <Checkbox checked={!!item.completed} onChange={this.handleToggle} />
             <IconButton aria-label="Delete" onClick={this.handleRemove}>
               <Icon>
                 delete
