@@ -1,3 +1,4 @@
+// @flow
 export default {
   TODO_ADD: 'TODO_ADD',
   TODO_REMOVE: 'TODO_REMOVE',

@@ -9,6 +9,9 @@ const styles = {
     color: red[800],
     fontWeight: 'bold',
   },
+  isPast: {
+    textDecoration: 'line-through',
+  },
 }
 
 type Props = {
@@ -45,7 +48,6 @@ class TodoCountDown extends React.Component<Props, State> {
       this.setState({
         remaining,
       })
-
     }, 1000)
   }
 
@@ -63,8 +65,9 @@ class TodoCountDown extends React.Component<Props, State> {
 
   audioRef: ?HTMLAudioElement
 
-  // eslint-disable-next-line class-methods-use-this
   format(time: number) {
+    const { classes } = this.props
+    const isPast = time < 0
     let timeRemaining = parseInt(time / 1000, 10)
 
     const hours = parseInt(timeRemaining / 3600, 10)
@@ -75,13 +78,16 @@ class TodoCountDown extends React.Component<Props, State> {
 
     const seconds = parseInt(timeRemaining, 10)
 
-    return `${
-      hours.toString().padStart(2, '0')
-    }:${
-      minutes.toString().padStart(2, '0')
-    }:${
-      seconds.toString().padStart(2, '0')
-    }`
+    return (
+      <span className={isPast ? classes.isPast : ''}>
+        {isPast ? '-' : ''}
+        {Math.abs(hours).toString().padStart(2, '0')}
+        :
+        {Math.abs(minutes).toString().padStart(2, '0')}
+        :
+        {Math.abs(seconds).toString().padStart(2, '0')}
+      </span>
+    )
   }
 
   render() {

@@ -9,6 +9,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import createStore from './store'
 import Header from './components/Header'
 import RestrictedArea from './components/RestrictedArea'
+import './polyfill/padStart'
 
 const store = createStore()
 

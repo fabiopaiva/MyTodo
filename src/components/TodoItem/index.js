@@ -118,12 +118,12 @@ class TodoItem extends React.Component<Props, State> {
           <ListItemText
             primary={(
               <Grid direction="row" container justify="flex-start">
-                <Grid item xs={8} className={!item.completed ? classes[`priority${item.priority}`] : ''}>
+                <Grid item xs={7} className={!item.completed ? classes[`priority${item.priority}`] : ''}>
                   <Typography color={item.completed ? 'secondary' : 'inherit'} variant="subheading">
                     {item.text}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={5}>
                   {!item.completed && item.dueTime && <TodoCountDown time={item.dueTime} />}
                 </Grid>
               </Grid>
