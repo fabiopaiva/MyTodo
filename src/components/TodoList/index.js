@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 import Checkbox from '@material-ui/core/Checkbox'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Typography from '@material-ui/core/Typography'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 import TodoItem from '../TodoItem'
 import TodoFooter from '../TodoFooter'
 import { setAllTodosStatus, listenFirebaseDBRef } from '../../actions/TodoActions'
@@ -72,9 +74,14 @@ class TodoList extends React.Component<Props> {
               {items.length > 0 && (
                 <React.Fragment>
                   <Grid container justify="flex-end">
-                    <Checkbox
-                      checked={!!isAllItemsChecked}
-                      onChange={() => fnSetAllTodosStatus(!isAllItemsChecked)}
+                    <FormControlLabel
+                      label="All"
+                      control={(
+                        <Checkbox
+                          checked={!!isAllItemsChecked}
+                          onChange={() => fnSetAllTodosStatus(!isAllItemsChecked)}
+                        />
+                      )}
                     />
                   </Grid>
                   <List component="nav">

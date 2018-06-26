@@ -9,12 +9,14 @@ import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import Grid from '@material-ui/core/Grid'
 import teal from '@material-ui/core/colors/teal'
 import yellow from '@material-ui/core/colors/yellow'
 import orange from '@material-ui/core/colors/orange'
 import red from '@material-ui/core/colors/red'
 import { withStyles } from '@material-ui/core/styles'
 import TodoInput from '../TodoInput'
+import TodoCountDown from '../TodoCountDown'
 import { toggleTodo, removeTodo } from '../../actions/TodoActions'
 
 import type { Todo } from '../../types/todo'
@@ -111,16 +113,20 @@ class TodoItem extends React.Component<Props, State> {
           dense
           button
           onClick={this.handleItemClick}
-          className={[
-            !item.id ? classes.pending : '',
-            !item.completed ? classes[`priority${item.priority}`] : '',
-          ].join(' ')}
+          className={!item.id ? classes.pending : ''}
         >
           <ListItemText
             primary={(
-              <Typography color={item.completed ? 'secondary' : 'inherit'} variant="subheading">
-                {item.text}
-              </Typography>
+              <Grid direction="row" container justify="flex-start">
+                <Grid item xs={8} className={!item.completed ? classes[`priority${item.priority}`] : ''}>
+                  <Typography color={item.completed ? 'secondary' : 'inherit'} variant="subheading">
+                    {item.text}
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  {!item.completed && item.dueTime && <TodoCountDown time={item.dueTime} />}
+                </Grid>
+              </Grid>
             )}
             className={item.completed ? classes.completed : ''}
           />

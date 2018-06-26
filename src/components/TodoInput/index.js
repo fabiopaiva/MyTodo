@@ -40,7 +40,9 @@ type State = {
   inputValue: string,
   priority: number,
   error: boolean,
+  dueTime: any,
 }
+const initialDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
 
 class TodoInput extends React.Component<Props, State> {
   static defaultProps = {
@@ -57,6 +59,7 @@ class TodoInput extends React.Component<Props, State> {
       inputValue: item ? item.text : '',
       priority: item ? item.priority : 0,
       error: false,
+      dueTime: item && item.dueTime ? item.dueTime : this.formatDate(initialDate),
     }
   }
 
@@ -72,8 +75,12 @@ class TodoInput extends React.Component<Props, State> {
     }
   }
 
+  handleTextChange = (event: SyntheticInputEvent<*>) => {
+    this.setState({ inputValue: event.target.value, error: false })
+  }
+
   handleChange = (event: SyntheticInputEvent<*>) => {
-    this.setState({ [event.target.name]: event.target.value, error: false })
+    this.setState({ [event.target.name]: event.target.value })
   }
 
   handlePriorityChange = (event: SyntheticInputEvent<*>, value: number) => {
@@ -100,29 +107,50 @@ class TodoInput extends React.Component<Props, State> {
       item,
       onUpdate,
     } = this.props
-    const { inputValue, priority } = this.state
+    const { inputValue, priority, dueTime } = this.state
     if (inputValue === '') {
       this.setState({ error: true })
     } else {
-      this.setState({ inputValue: '', priority: 0 })
+      this.setState({ inputValue: '', priority: 0, dueTime: this.formatDate(initialDate) })
       if (item) {
         item.text = inputValue
         item.priority = priority
+        item.dueTime = dueTime
         fnSaveTodo(item)
         if (onUpdate) {
           onUpdate()
         }
       } else {
-        fnSaveTodo({ text: inputValue, priority })
+        fnSaveTodo({ text: inputValue, priority, dueTime })
       }
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  formatDate(data: Date): string {
+    return `${
+      data.getFullYear()
+    }-${
+      (data.getMonth() + 1).toString().padStart(2, '0')
+    }-${
+      data.getDate().toString().padStart(2, '0')
+    }T${
+      data.getHours().toString().padStart(2, '0')
+    }:${
+      data.getMinutes().toString().padStart(2, '0')
+    }`
   }
 
   inputRef: ?HTMLInputElement
 
   render() {
     const { classes } = this.props
-    const { inputValue, priority, error } = this.state
+    const {
+      inputValue,
+      priority,
+      error,
+      dueTime,
+    } = this.state
 
     return (
       <Grid container className={classes.root}>
@@ -137,12 +165,24 @@ class TodoInput extends React.Component<Props, State> {
                       name="inputValue"
                       label="What needs to be done?"
                       value={inputValue}
-                      onChange={this.handleChange}
+                      onChange={this.handleTextChange}
                       inputRef={this.handleInputRef}
                     />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={4}>
+                  <FormControl fullWidth className={classes.input}>
+                    <TextField
+                      label="When?"
+                      id="dueTime"
+                      name="dueTime"
+                      type="datetime-local"
+                      value={dueTime}
+                      onChange={this.handleChange}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
                   <Typography>
                     { /* eslint-disable-next-line react/jsx-one-expression-per-line */ }
                     Priority ({priority + 1})
@@ -155,7 +195,7 @@ class TodoInput extends React.Component<Props, State> {
                     onChange={this.handlePriorityChange}
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={2}>
                   <Grid container justify="flex-end">
                     <Button onClick={this.save}>
                       Save
