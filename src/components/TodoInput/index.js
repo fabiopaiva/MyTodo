@@ -40,7 +40,7 @@ type State = {
   inputValue: string,
   priority: number,
   error: boolean,
-  dueTime: any,
+  dueTime: string,
 }
 const initialDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
 

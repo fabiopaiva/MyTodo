@@ -1,36 +1,67 @@
 // @flow
 import React from 'react'
+import { withStyles } from '@material-ui/core/styles'
+import red from '@material-ui/core/colors/red'
+import hurry from './hurry.mp3'
+
+const styles = {
+  hurry: {
+    color: red[800],
+    fontWeight: 'bold',
+  },
+}
 
 type Props = {
   time: string,
+  classes: Object,
 }
 
 type State = {
   remaining: number,
+  audioPlayed: boolean,
+  shouldPlay: boolean,
 }
 
-export default class TodoCountDown extends React.Component<Props, State> {
-  interval: IntervalID = 0
-
+class TodoCountDown extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
+    const remaining = ((new Date(props.time)).getTime() - Date.now())
     this.state = {
-      remaining: ((new Date(props.time)).getTime() - Date.now()),
+      remaining,
+      audioPlayed: false,
+      shouldPlay: remaining - (60 * 60 * 1000) > 0,
     }
   }
 
   componentDidMount() {
     this.interval = setInterval(() => {
       const { time } = this.props
+      const { shouldPlay, audioPlayed } = this.state
+      const remaining = ((new Date(time)).getTime() - Date.now())
+      if (shouldPlay && !audioPlayed && remaining - (60 * 60 * 1000) < 0 && this.audioRef) {
+        this.audioRef.play()
+        this.setState({ audioPlayed: true })
+      }
       this.setState({
-        remaining: ((new Date(time)).getTime() - Date.now()),
+        remaining,
       })
+
     }, 1000)
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval)
+    if (this.interval) {
+      clearInterval(this.interval)
+    }
   }
+
+  handleAudioRef = (ref) => {
+    this.audioRef = ref
+  }
+
+  interval: ?IntervalID
+
+  audioRef: ?HTMLAudioElement
 
   // eslint-disable-next-line class-methods-use-this
   format(time: number) {
@@ -54,9 +85,18 @@ export default class TodoCountDown extends React.Component<Props, State> {
   }
 
   render() {
+    const { classes } = this.props
     const { remaining } = this.state
+    const shouldHurryUp = remaining - (60 * 60 * 1000) < 0
     return (
-      this.format(remaining)
+      <span className={shouldHurryUp ? classes.hurry : ''}>
+        {this.format(remaining)}
+        <audio ref={this.handleAudioRef}>
+          <source src={hurry} type="audio/mpeg" />
+        </audio>
+      </span>
     )
   }
 }
+
+export default withStyles(styles)(TodoCountDown)

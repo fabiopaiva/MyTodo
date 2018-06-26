@@ -7,7 +7,6 @@ import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 import Checkbox from '@material-ui/core/Checkbox'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Typography from '@material-ui/core/Typography'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import TodoItem from '../TodoItem'
 import TodoFooter from '../TodoFooter'
@@ -41,10 +40,10 @@ class TodoList extends React.Component<Props> {
   }
 
   componentWillUnmount() {
-    this.dbListener.remove()
+    this.dbListener.then(deregister => deregister.remove())
   }
 
-  dbListener: { remove: Function }
+  dbListener: Promise<{ remove: Function }>
 
   render() {
     const {

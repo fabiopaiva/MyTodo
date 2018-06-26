@@ -45,14 +45,14 @@ export const listenFirebaseDBRef = () => async (dispatch: Function, getState: Fu
     })
   })
 
-  return {
+  return new Promise(resolve => resolve({
     remove: () => {
       ref.off('child_added')
       ref.off('child_changed')
       ref.off('child_removed')
       ref.off('child_moved')
     },
-  }
+  }))
 }
 
 export const saveTodo = (todo: Todo) => (dispatch: Function, getState: Function) => {
